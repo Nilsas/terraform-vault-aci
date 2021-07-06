@@ -51,7 +51,7 @@ resource "azurerm_container_group" "main" {
     commands = ["vault", "server", "-config=/vault/config"]
 
     environment_variables = {
-      SKIP_SETCAP        = true
+      SKIP_SETCAP = true
     }
 
     ports {
@@ -78,6 +78,12 @@ resource "azurerm_container_group" "main" {
       storage_account_name = azurerm_storage_account.main.name
       storage_account_key  = azurerm_storage_account.main.primary_access_key
     }
+  }
+}
+
+resource "null_resource" "init" {
+  provisioner "local-exec" {
+    command = "pwsh -File ${path.module}/scripts/New-VaultSetup.ps1 -VaultAddress ${azurerm_container_group.main.fqdn}:8200"
   }
 }
 
