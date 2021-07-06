@@ -1,7 +1,7 @@
 [CmdletBinding()]
 param (
-    [Parameter()]
-    [string]$VaultAddress = "aci-cm-vault-demo.westeurope.azurecontainer.io:8200"
+    [Parameter(Mandatory)]
+    [string]$VaultAddress
 )
 
 Begin {
