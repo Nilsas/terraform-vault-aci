@@ -9,7 +9,7 @@
   "disable_mlock": "true",
   "storage": {
     "file": {
-      "path": "/valut/data"
+      "path": "/vault/data"
     }
   },
   "max_lease_ttl": "720h",
