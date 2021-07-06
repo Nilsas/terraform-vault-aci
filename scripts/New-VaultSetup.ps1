@@ -5,6 +5,9 @@ param (
 )
 
 Begin {
+    # Stop script if we encounter errors
+    $ErrorActionPreference = "Stop"
+
     # Set environment variables
     $env:VAULT_ADDR = "http://{0}" -f $VaultAddress
     $env:VAULT_SKIP_VERIFY = $true
@@ -23,20 +26,24 @@ Process {
         $retry = $true
         $retryCount = 0
         while ($retry) {
-            $status = vault status
-            if ($status -match "Error checking seal status") {
-                Write-Verbose -Message "Probably container did not yet initialize"
-                Start-Sleep -Seconds 5
-                $retryCount++
+            try {
+                $status = vault status 2>&1
             }
-            else {
-                $retry = $false
-                continue
+            catch {
+                if ($status -match "Error checking seal status") {
+                    Write-Host "Probably container did not yet initialize"
+                    Write-Host "Sleep for 5 Seconds and try again, retry count: $($retryCount) out of 5"
+                    Start-Sleep -Seconds 10
+                    $retryCount++
+                }
+                else {
+                    $retry = $false
+                    continue
+                }
             }
-            $retry = $retryCount -lt 3
+            $retry = $retryCount -lt 5
         }
-        
-        $status = vault status
+
         foreach ($element in $status) {
             if (($element -match "Key" -and $element -match "Value") -or ($element -match "---")) {
                 continue
