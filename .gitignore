@@ -2,3 +2,5 @@
 **/*.terraform*
 **/*.tfstate*
 
+# Vault files
+**/*.vault/*
